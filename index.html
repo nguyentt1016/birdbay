@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sky Slalom Pose Runner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app-container">
+  <!-- NỬA TRÊN (35%): WEBCAM ĐÃ LẬT GƯƠNG + SKELETON 6 KHỚP -->
+  <div id="top-pane">
+    <div id="webcam-wrapper">
+      <video id="webcam" autoplay playsinline muted></video>
+      <canvas id="pose-canvas" width="320" height="240"></canvas>
+    </div>
+    <div class="cam-guide-label">
+      Camera: 320x240 @ 20Hz GPU | Khớp: Vai (11,12) - Khuỷu (13,14) - Cổ tay (15,16)
+    </div>
+  </div>
+
+  <!-- NỬA DƯỚI (65%): 3D WORLD + HUD OVERLAY -->
+  <div id="bottom-pane">
+    <div id="three-canvas-container"></div>
+
+    <!-- HUD OVERLAY -->
+    <div id="hud-overlay">
+      <!-- Góc trái: Điểm quả táo & Kỷ lục -->
+      <div class="hud-left">
+        <div class="score-item" id="score-text">🍎 Điểm: 0</div>
+        <div class="score-item" id="best-text">🏆 Kỷ lục: 0</div>
+        <div class="gate-counter" id="gate-progress-text">⛩️ Cổng bắt buộc: #1</div>
+      </div>
+
+      <!-- Giữa trên: Mũi tên la bàn chỉ hướng cổng bắt buộc hiện tại -->
+      <div class="hud-center">
+        <div class="compass-ring" title="Hướng tới Cổng Chữ Nhật bắt buộc">
+          <div id="compass-arrow"></div>
+        </div>
+        <div id="compass-dist">Cổng #1: --m</div>
+      </div>
+
+      <!-- Góc phải: Trạng thái & Thanh độ cao -->
+      <div class="hud-right">
+        <div id="state-badge" class="state-glide">[ĐANG LƯỢN - GLIDE]</div>
+        <div class="altitude-box">
+          <div class="altitude-info">
+            <span>ĐỘ CAO</span>
+            <span id="alt-value">25.0m</span>
+          </div>
+          <div class="altitude-bar-track">
+            <div id="altitude-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thông báo ăn điểm (+1 hoặc +2 Bonus) -->
+    <div id="score-popup"></div>
+
+    <!-- Banner cảnh báo rơi tự do -->
+    <div id="dive-warning-banner">[HẠ TAY RƠI NHANH - VẪY CÁNH NGAY!]</div>
+
+    <!-- Màn hình chờ bắt đầu -->
+    <div id="start-modal" class="modal-overlay">
+      <div class="modal-card">
+        <h1>🦅 SKY SLALOM POSE RUNNER</h1>
+        <p>Tối ưu hóa phần cứng cho Intel HD 520 (Low-Poly Flat Shading & 20Hz MediaPipe Lerp).</p>
+        <div class="pose-instructions">
+          <div>🟦 <b>CỔNG 2 THANH CHỮ NHẬT (BẮT BUỘC):</b> Bay xuyên qua mặt phẳng giữa 2 thanh dọc để được <b>+1 🍎</b> và mở khóa cổng tiếp theo.</div>
+          <div>🟡 <b>CỔNG RING TRÒN (BONUS TÙY CHỌN):</b> Nằm lệch trên đường bay, bay xuyên qua sẽ được thưởng <b>+2 🍎</b> (không bắt buộc).</div>
+          <div>✈️ <b>ĐIỀU KHIỂN:</b> Dang tay = Lượn & Nghiêng rẽ | Quạt tay xuống = Vẫy cánh bay lên | Hạ tay > 0.35s = Bổ nhào rơi nhanh gấp 7 lần!</div>
+        </div>
+        <button id="btn-start" class="btn-primary">Bắt đầu & Bật Camera</button>
+        <p id="loading-status" style="margin-top: 12px; font-size: 13px; color: #fbbf24;"></p>
+      </div>
+    </div>
+
+    <!-- Màn hình Game Over -->
+    <div id="gameover-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card">
+        <h1 style="color: #ef4444;">💥 CHẠM ĐẤT - GAME OVER!</h1>
+        <p id="final-score-msg" style="font-size: 18px; font-weight: bold; color: #f8fafc; margin: 12px 0;"></p>
+        <button id="btn-restart" class="btn-primary">Chơi lại ngay</button>
+        <p style="margin-top: 16px; margin-bottom: 6px; font-size: 13px; color: #94a3b8;">
+          Hoặc <b>giơ cao 2 tay lên trên đầu trong 2 giây</b> để tự động chơi lại:
+        </p>
+        <div id="hands-up-progress-wrap">
+          <div id="hands-up-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

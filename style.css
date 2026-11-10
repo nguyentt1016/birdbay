@@ -1,0 +1,389 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body, html {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0b132b;
+  color: #ffffff;
+}
+
+/* SPLIT-SCREEN DỌC: 35% TRÊN - 65% DƯỚI */
+#app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* NỬA TRÊN: WEBCAM & SKELETON (35%) */
+#top-pane {
+  position: relative;
+  width: 100%;
+  height: 35vh;
+  background: #090d16;
+  border-bottom: 3px solid #1e293b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#webcam-wrapper {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+#webcam, #pose-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  transform: scaleX(-1);
+}
+
+.cam-guide-label {
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  pointer-events: none;
+}
+
+/* NỬA DƯỚI: 3D WORLD & HUD OVERLAY (65%) */
+#bottom-pane {
+  position: relative;
+  width: 100%;
+  height: 65vh;
+  overflow: hidden;
+  background: #87ceeb;
+}
+
+#three-canvas-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* UI OVERLAY */
+#hud-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hud-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-width: 175px;
+}
+
+.score-item {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+#score-text { color: #f87171; }
+#best-text { color: #fbbf24; }
+
+.gate-counter {
+  font-size: 13px;
+  font-weight: 700;
+  color: #38bdf8;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 4px;
+}
+
+.hud-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.compass-ring {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.82);
+  border: 2px solid #38bdf8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+#compass-arrow {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 28px solid #38bdf8;
+  transform-origin: 50% 65%;
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.8));
+  transition: transform 0.05s linear;
+}
+
+#compass-dist {
+  background: rgba(15, 23, 42, 0.85);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #7dd3fc;
+}
+
+.hud-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+#state-badge {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  background: #0284c7;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.state-glide {
+  background: #0284c7 !important;
+  border-color: #7dd3fc !important;
+}
+
+.state-flap {
+  background: #16a34a !important;
+  border-color: #86efac !important;
+  transform: scale(1.04);
+}
+
+.state-dive {
+  background: #dc2626 !important;
+  border-color: #fca5a5 !important;
+  animation: blinkRed 0.35s infinite alternate;
+}
+
+.altitude-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.78);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.altitude-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+#alt-value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #38bdf8;
+}
+
+.altitude-bar-track {
+  width: 18px;
+  height: 120px;
+  background: #1e293b;
+  border-radius: 9px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 1px solid #475569;
+}
+
+#altitude-bar-fill {
+  width: 100%;
+  height: 50%;
+  background: #22c55e;
+  transition: height 0.08s linear, background-color 0.15s ease;
+}
+
+.alt-danger-blink {
+  background: #ef4444 !important;
+  animation: blinkRed 0.28s infinite alternate;
+}
+
+/* Popup thông báo ăn điểm */
+#score-popup {
+  position: absolute;
+  top: 26%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: 900;
+  padding: 8px 20px;
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.8);
+}
+
+#dive-warning-banner {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(220, 38, 38, 0.92);
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: 900;
+  border: 2px solid #fef08a;
+  box-shadow: 0 0 25px rgba(220, 38, 38, 0.9);
+  pointer-events: none;
+  display: none;
+  animation: blinkRed 0.3s infinite alternate;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@keyframes blinkRed {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0.55; transform: scale(0.97); }
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(9, 13, 22, 0.88);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  padding: 20px;
+  text-align: center;
+}
+
+.modal-card {
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 16px;
+  padding: 24px 30px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+}
+
+.modal-card h1 {
+  font-size: 25px;
+  margin-bottom: 10px;
+  color: #38bdf8;
+}
+
+.modal-card p {
+  font-size: 14px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.pose-instructions {
+  text-align: left;
+  background: #0f172a;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #e2e8f0;
+  margin-bottom: 18px;
+  border: 1px solid #334155;
+}
+
+.pose-instructions div {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.pose-instructions div:last-child {
+  margin-bottom: 0;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #fff;
+  border: none;
+  padding: 12px 26px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#hands-up-progress-wrap {
+  margin-top: 14px;
+  width: 100%;
+  background: #0f172a;
+  border-radius: 8px;
+  height: 12px;
+  overflow: hidden;
+  border: 1px solid #334155;
+}
+
+#hands-up-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #22c55e;
+  transition: width 0.08s linear;
+}
